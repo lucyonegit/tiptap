@@ -1,0 +1,132 @@
+/* 全局与根容器全屏 */
+html, body, #root { height: 100%; }
+body { margin: 0; }
+#root { width: 100vw; height: 100vh; }
+
+.md-import-page.fullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-header .title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.page-header .actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #3d3d3d;
+}
+
+.btn {
+  border: 1px solid #e3e4e7;
+  background: #fff;
+  color: #17171d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #f7f7f8;
+}
+.btn.primary {
+  background: #646cff;
+  border-color: #646cff;
+  color: #fff;
+}
+.btn.primary:hover {
+  background: #555bf1;
+}
+.btn.secondary {
+  background: #f5f6f8;
+}
+
+.content.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.source-pane,
+.editor-pane {
+  background: #fff;
+  border-right: 1px solid #e9e9ee;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.source-pane { border-right: 1px solid #e3e4e7; }
+.editor-pane { border-left: 1px solid #f0f0f4; }
+
+.source-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.left-actions { display: flex; gap: 8px; }
+.right-actions { display: flex; gap: 8px; align-items: center; }
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid #e3e4e7;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.segment {
+  background: #f8f9fb;
+  border: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.segment.active {
+  background: #646cff;
+  color: #fff;
+}
+
+.file-input input[type="file"] {
+  font-size: 13px;
+}
+
+.markdown-input {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border: 1px solid #e3e4e7;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  outline: none;
+  resize: none;
+}
+
+.source-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.editor-pane { overflow: auto; }
