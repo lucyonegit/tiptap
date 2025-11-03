@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { TiptapEditor, type TiptapEditorRef } from './components/tiptap-editor'
 
+import { MarkdownToolPlugin } from './components/tiptap-editor/plugins/floatTool'
+
 type ThemeType = 'default' | 'dark'
 
 const sampleMarkdown = `
@@ -13,6 +15,17 @@ const sampleMarkdown = `
 - 段落、标题、列表、引用
 - 代码块与高亮
 - 链接与图片、表格、任务列表
+
+==two equal signs==
+
+## 链接
+[这是链接](www.baidu.com "百度首页")
+
+## 图片
+![图片](https://dev-nova-api.betteryeah.com/v1/super_agent/chat/file/swPQdHwU "百度首页")
+
+## 删除线
+~~这是一个带有删除线的文本~~
 
 ## 段落
 
@@ -35,7 +48,26 @@ const sampleMarkdown = `
 
 ## 代码块
 \`\`\`ts
-console.log('Hello')
+export const parseMarkdown = (markdownContent: string): string => {
+  const md = new MarkdownIt();
+  md.renderer.rules.fence = (tokens, idx) => {
+    const token = tokens[idx];
+    const content = token.content;
+    const language = token.info.trim();
+    return \`<span class="editor-code" data-language="$\{language}"><code>$\{encodeURIComponent(content)}</code></span>\`;
+  };
+  const texHTMLContent = md.render(markdownContent);
+  return texHTMLContent;
+};
+\`\`\`
+
+## mermaid图
+\`\`\`mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
 \`\`\`
 
 ---
@@ -162,7 +194,9 @@ function App() {
             theme={theme}
             placeholder="开始编辑..."
             // onChange={(md) => setEditorMd(md)}
-          />
+          >
+            <MarkdownToolPlugin />
+          </TiptapEditor>
         </section>
       </div>
     </div>

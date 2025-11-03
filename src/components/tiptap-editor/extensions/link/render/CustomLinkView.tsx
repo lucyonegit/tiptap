@@ -16,6 +16,7 @@ const CustomLinkView: React.FC<MarkViewRendererProps> = props => {
   const anchor = (
     <span
       className={`px-[2px] text-[15px] text-[#3F3F44] mr-[3px] text-[#3F3F44] border-b border-b-[1px] border-b-dashed border-b-[#626999B3]  hover:bg-[#6269991A] cursor-pointer py-[2px] ${className}`}
+      title={title||''}
       onClick={() => {
         if (href) {
           window.open(href, '_blank')

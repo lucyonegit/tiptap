@@ -33,7 +33,7 @@
   --list-font-size-base: 15px;
 
   /* code 代码块相关 */
-  --code-bg: #fff;
+  --code-bg: #222;
   --code-font-family: 'JetBrainsMono', monospace;
   --code-font-size: 14px;
 
@@ -246,20 +246,17 @@
   text-align: right;
   min-width: 20px;
 } */
-.theme-default .tiptap-editor pre {
-  background: var(--code-bg);
-  /* color: #fff; */
-  padding: 8px 0;
+.theme-default pre {
+  background-color: var(--code-bg);
+  color: #fff;
+  padding: 12px;
   border-radius: 6px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  white-space: pre-wrap;
 }
 
 .theme-default .tiptap-editor pre code {
   font-family: var(--code-font-family);
   color: inherit;
-  padding: 0;
-  background: none;
   font-size: var(--code-font-size);
 }
 
@@ -315,4 +312,16 @@
   display: flex;
   justify-content: center; 
   align-items: center;
+}
+
+.node-table .editor-table-group{
+  border: 1px solid transparent;
+}
+
+.node-table.ProseMirror-selectednode .editor-table-group{
+  border: 1px solid #646cff !important;
+}
+
+.node-table .editor-table-group.table-hover{
+  border: 1px solid #646cff !important;
 }

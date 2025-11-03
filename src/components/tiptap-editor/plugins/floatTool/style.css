@@ -1,0 +1,39 @@
+.selection-toolbar {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #ffffff;
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar-btn {
+  border: none;
+  background: transparent;
+  color: #333;
+  font-size: 14px;
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toolbar-btn:hover {  
+  background: #f3f4f6;
+}
+
+.toolbar-btn.active {
+  background: #e9eef9;
+  color: #111;
+}
+
+.theme-dark .selection-toolbar {
+  background: var(--bg-secondary);
+  border-color: #2a2a2f;
+}
+.theme-dark .toolbar-btn { color: var(--text); }
+.theme-dark .toolbar-btn:hover { background: rgba(255,255,255,0.08); }
+.theme-dark .toolbar-btn.active { background: rgba(139, 92, 246, 0.25); }

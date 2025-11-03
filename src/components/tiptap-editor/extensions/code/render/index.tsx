@@ -1,11 +1,12 @@
-import { type NodeViewProps, NodeViewWrapper } from '@tiptap/react';
-import { RenderHighLightCode } from './code-block';
+import { NodeViewContent, type NodeViewProps, NodeViewWrapper } from '@tiptap/react';
+// import { RenderHighLightCode } from './code-block';
 import { RenderMermaid } from './mermaid';
 import { useMemo } from 'react';
 
 export const RenderCodeBlock: React.FC<NodeViewProps> = (props) => {
-  const { HTMLAttributes } = props
-  const { language, content } = HTMLAttributes
+  const { node } = props
+  const { language } = node.attrs;
+  const content = node.textContent;
   const decodeURIContent = useMemo(() => {
     return decodeURIComponent(content)
   }, [content])
@@ -13,7 +14,12 @@ export const RenderCodeBlock: React.FC<NodeViewProps> = (props) => {
     if(language === 'mermaid') {
       return <RenderMermaid value={decodeURIContent} />
     } else {
-      return <RenderHighLightCode language={language} content={decodeURIContent} />
+      return (
+        <pre>
+          { /* @ts-ignore */}
+          <NodeViewContent as={'code'}/>
+        </pre>
+      )
     }
   }, [])
   

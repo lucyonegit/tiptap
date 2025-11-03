@@ -10,28 +10,42 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
-import Underline from '@tiptap/extension-underline';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import MarkdownIt from 'markdown-it';
 import { Markdown } from '@tiptap/markdown'
+import { all, createLowlight } from 'lowlight'
 
 import { CustomCodeBlock } from '../extensions/code/index';
 import CustomImage from '../extensions/image';
 import CustomHeading from '../extensions/head';
 
+import {TableSelectionExtension} from '../extensions/expand-selection'
+
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import 'highlight.js/styles/tomorrow-night-bright.min.css'
+
 
 import { useEffect, useRef } from 'react';
+
+const lowlight = createLowlight(all)
+lowlight.register('html', html)
+lowlight.register('css', css)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
 
  // 将Markdown转换为HTML
 export const parseMarkdown = (markdownContent: string): string => {
   const md = new MarkdownIt();
-  md.renderer.rules.fence = (tokens, idx) => {
-    const token = tokens[idx];
-    const content = token.content;
-    const language = token.info.trim();
-    return `<span class="editor-code" data-language="${language}"><code>${encodeURIComponent(content)}</code></span>`;
-  };
+  // md.renderer.rules.fence = (tokens, idx) => {
+  //   const token = tokens[idx];
+  //   const content = token.content;
+  //   const language = token.info.trim();
+  //   return `<span class="editor-code" data-language="${language}">${encodeURIComponent(content)}</span>`;
+  // };
   const texHTMLContent = md.render(markdownContent);
   return texHTMLContent;
 };
@@ -73,6 +87,14 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
       onUpdate && onUpdate(md)
     }, 1000)
   }
+
+  const getContent = (contentType: 'markdown' | 'html') => {
+    if(contentType === 'markdown') {
+      return initialContent 
+    }
+    return parseMarkdown(initialContent)
+  }
+
   // 初始化编辑器
   const editor = useEditor({
     extensions: [
@@ -100,11 +122,7 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
             class: 'editor-textCode',
           },
         },
-        codeBlock: {
-          HTMLAttributes: {
-            class: 'editor-code',
-          },
-        },
+        codeBlock: false,
         bulletList: {
           HTMLAttributes: {
             class: 'editor-list-ul',
@@ -135,6 +153,11 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
             class: 'editor-textStrikethrough',
           },
         },
+        underline: {
+          HTMLAttributes: {
+            class: 'editor-textUnderline',
+          },
+        }
       }),
       Highlight,
       CustomLink.configure({
@@ -149,6 +172,7 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
       }),
       CustomTable.configure({
         resizable: true,
+        allowTableNodeSelection: true,
         HTMLAttributes: {
           class: 'editor-table',
         }
@@ -176,16 +200,18 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
         placeholder,
       }),
       Typography,
-      Underline.configure({
-        HTMLAttributes: {
-          class: 'editor-textUnderline',
-        },
-      }),
       TextStyle,
       Color,
-      CustomCodeBlock,
+      TableSelectionExtension,
+      // CodeBlockLowlight.configure({
+      //   lowlight,
+      // }),
+      CustomCodeBlock.configure({
+        lowlight
+      }),
     ],
-    content: initialContent ? parseMarkdown(initialContent) : '',
+    content: getContent('markdown'),
+    contentType: 'markdown',
     onUpdate: ({ editor }) => {
       const md = editor.getMarkdown();
       handleChange(md);
@@ -194,9 +220,15 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
   
   useEffect(() => {
     if (initialContent) {
+      editor.commands.setContent(initialContent, {
+        contentType: "markdown",
+      });
+      return;
       const html = parseMarkdown(disableSetextHeading(initialContent));
       setTimeout(() => {
-        editor.commands.setContent(html);
+        editor.commands.setContent(html, {
+          contentType:'html' // 'markdown'
+        });
         changeCount.current+=1
       }, 0);
     }

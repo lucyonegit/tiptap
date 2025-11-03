@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/react'
 import './TableView.css'
+import { NodeSelection } from '@tiptap/pm/state'
 
 const CopyIcon = ({ className }: { className?: string }) => {
   return (
@@ -98,6 +99,7 @@ async function copyToClipboard(
 export const TableView: React.FC<NodeViewProps> = props => {
   const HTMLAttributes = props.extension.options.HTMLAttributes
   const tableRef = useRef<HTMLTableElement>(null)
+  const warpRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -117,9 +119,27 @@ export const TableView: React.FC<NodeViewProps> = props => {
     }
   }
 
+  const onTableClick = () => {
+    console.log('table click', props)
+    const { view, node, getPos } = props
+    const { doc, tr } = view.state;
+
+    let tablePos = typeof getPos === 'function' ? getPos(): false
+    let tableNode = node;
+    if(!tablePos) {
+      return
+    }
+    if (tableNode) {
+      const selection = NodeSelection.create(doc, tablePos);
+      view.dispatch(tr.setSelection(selection));
+      return true;
+    }
+    return false;
+  }
+
   return (
     <NodeViewWrapper className={HTMLAttributes.class || 'editor-table'}>
-      <div style={{ position: 'relative' }} className='group'>
+      <div style={{ position: 'relative' }} className='editor-table-group' ref={warpRef}>
         <div
           onClick={handleCopy}
           className='w-[28px] h-[28px] absolute top-[2px] right-[2px] opacity-0 group-hover:opacity-100 z-[10000] rounded-[4px] flex flex-row justify-center items-center bg-white border border-[#DDD] shadow-sm transition-all duration-200 cursor-pointer'
@@ -143,7 +163,15 @@ export const TableView: React.FC<NodeViewProps> = props => {
             <CopyIcon className='text-gray-600 hover:text-gray-800' />
           )}
         </div>
-        <table ref={tableRef} style={{ width: '100%' }}>
+        <table ref={tableRef} style={{ width: '100%' }}
+          contentEditable={false}
+          onClick={onTableClick}
+          onMouseOut={() => {
+            warpRef.current?.classList.remove('table-hover')
+          }}
+          onMouseOver={() => {
+            warpRef.current?.classList.add('table-hover')
+        }}>
           <NodeViewContent as={'tbody' as any} />
         </table>
       </div>
