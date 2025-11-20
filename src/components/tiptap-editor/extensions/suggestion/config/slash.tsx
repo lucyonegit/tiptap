@@ -1,0 +1,81 @@
+import { SlashCommandMenu } from "../componens/slashCommandMenu";
+import { createRoot } from 'react-dom/client'
+// Suggestion 配置
+export const suggestionConfig = {
+  char: '/',
+  allowSpaces: false,
+  startOfLine: true, // 只在行首触发
+  render: () => {
+    
+    let component: React.ReactElement | null = null;
+    let popup: { update: (props: any) => void; destroy: () => void } | null = null;
+    return {
+      onStart: (props: any) => {
+        const { editor,decorationNode } = props
+        if (!editor) return;
+        const triggerDiv = document.createElement('div');
+        triggerDiv.setAttribute('id', 'slash-trigger');
+        triggerDiv.setAttribute('contenteditable', 'false');
+        triggerDiv.style.position = 'absolute';
+        // triggerDiv.style.backgroundColor = '#ff0';
+        triggerDiv.style.width = '80px'
+        triggerDiv.style.height = '28px'
+        const editorDom = editor.view.dom as HTMLElement;
+        editorDom?.parentElement?.appendChild(triggerDiv);
+        
+
+        component = <SlashCommandMenu
+          editor={editor}
+          range={props.range}
+          isVisible={true}
+          onClose={() => {
+            if (popup) popup.destroy();
+          }}
+        />;
+
+        const root = createRoot(triggerDiv)
+        root.render(component);
+
+        // 定位：使用 Tiptap 提供的更新函数
+        popup = {
+          update: (props: any) => {
+            const {  clientRect } = props;
+            const position = editorDom.getBoundingClientRect();
+            if (clientRect) {
+              const { left, bottom } = clientRect();
+              triggerDiv.style.position = 'absolute';
+              triggerDiv.style.left = `${0}px`;
+              triggerDiv.style.top = `${bottom - position.top - 30}px`; // 稍微上移
+              triggerDiv.style.zIndex = '1000';
+            }
+          },
+          destroy: () => {
+            root.unmount();
+            triggerDiv.remove();
+          },
+        };
+
+        if (props.clientRect) {
+          popup.update(props);
+        }
+      },
+
+      onUpdate: (props: any) => {
+        popup?.update(props);
+      },
+
+      onKeyDown: (props: any) => {
+        // 可选：处理键盘事件（如 ESC 关闭）
+        if (props.event.key === 'Escape') {
+          popup?.destroy();
+          return true;
+        }
+        return false;
+      },
+
+      onExit: () => {
+        popup?.destroy();
+      },
+    };
+  },
+};

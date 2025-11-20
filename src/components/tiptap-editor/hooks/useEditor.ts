@@ -20,7 +20,8 @@ import { CustomCodeBlock } from '../extensions/code/index';
 import CustomImage from '../extensions/image';
 import CustomHeading from '../extensions/head';
 
-import {TableSelectionExtension} from '../extensions/expand-selection'
+import { TableSelectionExtension } from '../extensions/expand-selection'
+import {slashCommandExtention} from '../extensions/suggestion'
 
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
@@ -99,6 +100,7 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
   const editor = useEditor({
     extensions: [
       Markdown,
+      slashCommandExtention,
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
