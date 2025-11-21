@@ -7,12 +7,12 @@ export const RenderCodeBlock: React.FC<NodeViewProps> = (props) => {
   const { node } = props
   const { language } = node.attrs;
   const content = node.textContent;
-  const decodeURIContent = useMemo(() => {
-    return decodeURIComponent(content)
-  }, [content])
+  // const decodeURIContent = useMemo(() => {
+  //   return decodeURIComponent(content)
+  // }, [content])
   const renderer = useMemo(() => {
     if(language === 'mermaid') {
-      return <RenderMermaid value={decodeURIContent} />
+      return <RenderMermaid value={content} />
     } else {
       return (
         <pre>

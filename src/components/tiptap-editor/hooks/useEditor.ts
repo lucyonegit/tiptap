@@ -12,7 +12,6 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
-import MarkdownIt from 'markdown-it';
 import { Markdown } from '@tiptap/markdown'
 import { all, createLowlight } from 'lowlight'
 
@@ -38,39 +37,6 @@ lowlight.register('css', css)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
 
- // 将Markdown转换为HTML
-export const parseMarkdown = (markdownContent: string): string => {
-  const md = new MarkdownIt();
-  // md.renderer.rules.fence = (tokens, idx) => {
-  //   const token = tokens[idx];
-  //   const content = token.content;
-  //   const language = token.info.trim();
-  //   return `<span class="editor-code" data-language="${language}">${encodeURIComponent(content)}</span>`;
-  // };
-  const texHTMLContent = md.render(markdownContent);
-  return texHTMLContent;
-};
-
-// 禁用 Setext 形式的标题解析
-export const disableSetextHeading = (input: string) => {
-  const lines = input.split('\n');
-  const result = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // 如果是 === 或 ---，上一行有文本，则认为它是 hr，而不是 heading
-    if ((/^(?:=){3,}$/.test(line) || /^(?:-){3,}$/.test(line)) && i > 0 && lines[i - 1].trim() !== '') {
-      result.push(''); // 在上一行后加一个空行，避免被解析成 Setext heading
-      result.push(line); // 保留原 hr 语法
-    } else {
-      result.push(line);
-    }
-  }
-
-  return result.join('\n');
-}
-
 export const useEditorInit = (initialContent: string, placeholder: string, onUpdate?: (content: string) => void) => {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
   const changeCount = useRef(0)
@@ -87,13 +53,6 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
     timerRef.current = setTimeout(() => {
       onUpdate && onUpdate(md)
     }, 1000)
-  }
-
-  const getContent = (contentType: 'markdown' | 'html') => {
-    if(contentType === 'markdown') {
-      return initialContent 
-    }
-    return parseMarkdown(initialContent)
   }
 
   // 初始化编辑器
@@ -212,7 +171,7 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
         lowlight
       }),
     ],
-    content: getContent('markdown'),
+    content: '',
     contentType: 'markdown',
     onUpdate: ({ editor }) => {
       const md = editor.getMarkdown();
@@ -226,13 +185,6 @@ export const useEditorInit = (initialContent: string, placeholder: string, onUpd
         contentType: "markdown",
       });
       return;
-      const html = parseMarkdown(disableSetextHeading(initialContent));
-      setTimeout(() => {
-        editor.commands.setContent(html, {
-          contentType:'html' // 'markdown'
-        });
-        changeCount.current+=1
-      }, 0);
     }
   }, [initialContent]);
 

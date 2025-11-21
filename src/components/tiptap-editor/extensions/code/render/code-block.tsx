@@ -10,7 +10,6 @@ interface RenderHighLightCodeProps {
 }
 
 export const RenderHighLightCode: React.FC<RenderHighLightCodeProps> = ({ language, content }) => {
-  debugger
   const contentRef = useRef<HTMLElement>(null);
 
   // useEffect(() => {
